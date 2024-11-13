@@ -15,11 +15,12 @@ const Coin = () => {
 
     useEffect(() => {
         axios.get(url).then((res) => {
+            console.log(res.data);
             setCoin(res.data)
         }).catch((error) => {
             console.log(error)
         })
-    }, [])
+    }, [coinId])
 
     return (
         <div>
