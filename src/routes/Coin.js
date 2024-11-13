@@ -1,29 +1,32 @@
-import axios from 'axios'
-import { useParams } from 'react-router-dom'
-import React, { useState, useEffect } from 'react'
-import DOMPurify from 'dompurify'
+import axios from 'axios';
+import { useParams } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import DOMPurify from 'dompurify';
 
-import './Coin.css'
+import './Coin.css';
 
 const Coin = () => {
-    const params = useParams();
+    const params = useParams();  // Already correct, no changes needed here
     const [coin, setCoin] = useState({});
-
-    const coinId = params.coinId;
     
-    // CORS Proxy URL
-    const proxyUrl = "https://cors-anywhere.herokuapp.com/";
-    const url = `${proxyUrl}https://pro-api.coingecko.com/api/v3/coins/${coinId}`; // Prepend proxy URL
-
+    const coinId = params.coinId;  // Ensure coinId is defined here
+    
+    const url = `https://pro-api.coingecko.com/api/v3/coins/${coinId}`;
+    
     useEffect(() => {
-        axios.get(url)
-            .then((res) => {
-                setCoin(res.data);
-            })
-            .catch((error) => {
-                console.log(error);
-            });
-    }, [coinId]);
+        // Make sure to include your API key here in the headers
+        axios.get(url, {
+            headers: {
+                'Authorization': `Bearer CG-TFCQJsBeHq3vSoaFH5HUZ65A`
+            }
+        })
+        .then((res) => {
+            setCoin(res.data);
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+    }, [coinId]);  // Make sure to include coinId in the dependency array
 
     return (
         <div>
@@ -40,6 +43,7 @@ const Coin = () => {
                             {coin.image ? <img src={coin.image.small} alt='' /> : null}
                             <p>{coin.name}</p>
                             {coin.symbol ? <p>{coin.symbol.toUpperCase()}/USD</p> : null}
+                            
                         </div>
                         <div className='coin-price'>
                             {coin.market_data?.current_price ? <h1>${coin.market_data.current_price.usd.toLocaleString()}</h1> : null}
@@ -80,8 +84,8 @@ const Coin = () => {
                             </div>
                             <div className='row'>
                                 <h4>24 Hour High</h4>
-                                {coin.market_data?.high_24h ? <p>${coin.market_data.high_24h.usd.toLocaleString()}</p> : null}                            
-                            </div>
+                                {coin.market_data?.high_24h ? <p>${coin.market_data.high_24h.usd.toLocaleString()}</p> : null}                            </div>
+
                         </div>
                         <div className='right'>
                             <div className='row'>
@@ -92,6 +96,7 @@ const Coin = () => {
                                 <h4>Circulating Supply</h4>
                                 {coin.market_data ? <p>{coin.market_data.circulating_supply}</p> : null}
                             </div>
+
                         </div>
                     </div>
                 </div>
@@ -101,15 +106,13 @@ const Coin = () => {
                         <h3>About</h3>
                         <p dangerouslySetInnerHTML={{
                             __html: DOMPurify.sanitize(coin.description ? coin.description.en : ''),
-                        }}></p>
+                        }} />
                     </div>
                 </div>
+
             </div>
         </div>
-    )
-}
+    );
+};
 
 export default Coin;
-
-
-
