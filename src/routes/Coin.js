@@ -6,21 +6,24 @@ import DOMPurify from 'dompurify'
 import './Coin.css'
 
 const Coin = () => {
+    const params = useParams();
+    const [coin, setCoin] = useState({});
 
-    const params = useParams()
-    const [coin, setCoin] = useState({})
-
-    const url = `https://pro-api.coingecko.com/api/v3/coins/${params.coinId}`
-
+    const coinId = params.coinId;
+    
+    // CORS Proxy URL
+    const proxyUrl = "https://cors-anywhere.herokuapp.com/";
+    const url = `${proxyUrl}https://pro-api.coingecko.com/api/v3/coins/${coinId}`; // Prepend proxy URL
 
     useEffect(() => {
-        axios.get(url).then((res) => {
-            console.log(res.data);
-            setCoin(res.data)
-        }).catch((error) => {
-            console.log(error)
-        })
-    }, [coinId])
+        axios.get(url)
+            .then((res) => {
+                setCoin(res.data);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }, [coinId]);
 
     return (
         <div>
@@ -37,7 +40,6 @@ const Coin = () => {
                             {coin.image ? <img src={coin.image.small} alt='' /> : null}
                             <p>{coin.name}</p>
                             {coin.symbol ? <p>{coin.symbol.toUpperCase()}/USD</p> : null}
-                            
                         </div>
                         <div className='coin-price'>
                             {coin.market_data?.current_price ? <h1>${coin.market_data.current_price.usd.toLocaleString()}</h1> : null}
@@ -61,11 +63,10 @@ const Coin = () => {
                             <tr>
                                 <td>{coin.market_data?.price_change_percentage_1h_in_currency ? <p>{coin.market_data.price_change_percentage_1h_in_currency.usd.toFixed(1)}%</p> : null}</td>
                                 <td>{coin.market_data?.price_change_percentage_24h_in_currency ? <p>{coin.market_data.price_change_percentage_24h_in_currency.usd.toFixed(1)}%</p> : null}</td>
-                                <td>{coin.market_data?.price_change_percentage_24h_in_currency ? <p>{coin.market_data.price_change_percentage_7d_in_currency.usd.toFixed(1)}%</p> : null}</td>
-                                <td>{coin.market_data?.price_change_percentage_24h_in_currency ? <p>{coin.market_data.price_change_percentage_14d_in_currency.usd.toFixed(1)}%</p> : null}</td>
-                                <td>{coin.market_data?.price_change_percentage_24h_in_currency ? <p>{coin.market_data.price_change_percentage_30d_in_currency.usd.toFixed(1)}%</p> : null}</td>
-                                <td>{coin.market_data?.price_change_percentage_24h_in_currency ? <p>{coin.market_data.price_change_percentage_1y_in_currency.usd.toFixed(1)}%</p> : null}</td>
-
+                                <td>{coin.market_data?.price_change_percentage_7d_in_currency ? <p>{coin.market_data.price_change_percentage_7d_in_currency.usd.toFixed(1)}%</p> : null}</td>
+                                <td>{coin.market_data?.price_change_percentage_14d_in_currency ? <p>{coin.market_data.price_change_percentage_14d_in_currency.usd.toFixed(1)}%</p> : null}</td>
+                                <td>{coin.market_data?.price_change_percentage_30d_in_currency ? <p>{coin.market_data.price_change_percentage_30d_in_currency.usd.toFixed(1)}%</p> : null}</td>
+                                <td>{coin.market_data?.price_change_percentage_1y_in_currency ? <p>{coin.market_data.price_change_percentage_1y_in_currency.usd.toFixed(1)}%</p> : null}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -79,8 +80,8 @@ const Coin = () => {
                             </div>
                             <div className='row'>
                                 <h4>24 Hour High</h4>
-                                {coin.market_data?.high_24h ? <p>${coin.market_data.high_24h.usd.toLocaleString()}</p> : null}                            </div>
-
+                                {coin.market_data?.high_24h ? <p>${coin.market_data.high_24h.usd.toLocaleString()}</p> : null}                            
+                            </div>
                         </div>
                         <div className='right'>
                             <div className='row'>
@@ -91,7 +92,6 @@ const Coin = () => {
                                 <h4>Circulating Supply</h4>
                                 {coin.market_data ? <p>{coin.market_data.circulating_supply}</p> : null}
                             </div>
-
                         </div>
                     </div>
                 </div>
@@ -101,16 +101,15 @@ const Coin = () => {
                         <h3>About</h3>
                         <p dangerouslySetInnerHTML={{
                             __html: DOMPurify.sanitize(coin.description ? coin.description.en : ''),
-                        }}>
-                        
-                        </p>
-
+                        }}></p>
                     </div>
                 </div>
-
             </div>
         </div>
     )
 }
 
-export default Coin
+export default Coin;
+
+
+
